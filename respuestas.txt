@@ -1,0 +1,42 @@
+============================================================
+UD3 · Bloque 1 · Actividad guiada: primer modelo ORM
+Preguntas de interpretación
+Alumno: Antonio Segovia Santos
+============================================================
+
+1. ¿Qué significan las siglas ORM?
+Significan Object-Relational Mapping (Mapeo Objeto-Relacional). Es una técnica que permite conectar las tablas de una base de datos relacional con clases de un lenguaje orientado a objetos (como Python), trabajando con objetos en lugar de escribir sentencias SQL manualmente.
+
+2. ¿Qué representa la clase Libro?
+Representa la tabla "libros" de la base de datos relacional "biblioteca" (su estructura y sus columnas mapeadas como atributos).
+
+3. ¿Qué representa una instancia de Libro?
+Representa una fila o registro concreto de la tabla "libros" en la base de datos.
+
+4. ¿Para qué sirve __tablename__?
+Sirve para indicar explícitamente a SQLAlchemy el nombre exacto de la tabla en la base de datos PostgreSQL ("libros") con la que debe asociarse el modelo.
+
+5. ¿Por qué id_libro debe declararse como clave primaria?
+Porque SQLAlchemy necesita conocer qué columna identifica de manera única a cada fila en la tabla para poder gestionar la identidad de los objetos en memoria (Identity Map) y permitir operaciones directas como Session.get().
+
+6. ¿Qué diferencia existe entre Mapped[int] y mapped_column(primary_key=True)?
+- Mapped[int] es la anotación de tipo en Python que indica al ORM y al analizador estático de tipos (type checker) que el atributo en el objeto Python será un entero (int) no nulo.
+- mapped_column(primary_key=True) define la configuración de la columna en la base de datos relacional (en este caso, indicando que actúa como clave primaria, además de permitir especificar restricciones como unique, longitud o tipo SQL).
+
+7. ¿Qué función tiene el Engine?
+Es el punto central de conexión con la base de datos. Gestiona el dialecto SQL (PostgreSQL), el driver de conexión (psycopg) y el pool de conexiones físicas hacia el servidor.
+
+8. ¿Qué función tiene la Session?
+Es la interfaz de trabajo del ORM con la base de datos. Se encarga de gestionar las transacciones, ejecutar consultas para recuperar o persistir objetos y mantener el registro de los objetos cargados en memoria (patrón Unit of Work e Identity Map).
+
+9. ¿Qué devuelve session.scalars(select(Libro)).all()?
+Devuelve una secuencia/lista de objetos (instancias) de la clase Libro correspondientes a todas las filas recuperadas por la consulta SELECT.
+
+10. ¿Qué devuelve session.get(Libro, 999999)?
+Devuelve None, ya que no existe ningún registro en la tabla "libros" cuya clave primaria (id_libro) sea 999999.
+
+11. ¿Para qué sirve echo=True?
+Sirve para que el Engine muestre por la salida estándar (consola/log) todas las sentencias SQL que SQLAlchemy genera y envía a la base de datos, junto con los parámetros utilizados y el control de las transacciones (BEGIN, COMMIT, ROLLBACK).
+
+12. ¿Por qué no utilizamos float para el precio?
+Porque el tipo float utiliza representación binaria en coma flotante (IEEE 754) y produce errores de redondeo e imprecisión con números decimales (por ejemplo, 0.1 + 0.2). Para valores monetarios como el precio se utiliza Decimal en Python y Numeric(10, 2) en SQL, que garantizan precisión decimal exacta.
